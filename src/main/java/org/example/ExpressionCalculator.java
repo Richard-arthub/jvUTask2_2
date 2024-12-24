@@ -175,8 +175,15 @@ public class ExpressionCalculator {
         if (!isExpressionValid()) throw new InvalidExpressionException("Некорректный ввод выражения.");
     }
 
-    private double performCalculation(double num1, double num2, char operator) {
+    private double performCalculation(double num2, double num1, char operator) {
         // подсчёт через case
+        switch (operator)
+        {
+            case '*': return num1*num2;
+            case '/': return num1/num2;
+            case '+': return num1+num2;
+            case '-': return num1-num2;
+        }
         return 0.;
     }
 
@@ -193,17 +200,16 @@ public class ExpressionCalculator {
         char [] charExpr = expression.toCharArray();
         char currChar, prevChar;
 
-        numStack.push(0.);
-        symbStack.push('('); //первый символ всегда открывающая скобка
-        for (int i = 1; i < expression.length(); i ++) // i = 1 т.к. алгоритм проверяет предыдущий символ на цифру
+        //первый символ всегда открывающая скобка
+        for (int i = 1; i < expression.length(); i ++)
         {
             currChar = charExpr[i];
             prevChar = charExpr[i-1];
             if (Character.isDigit(currChar) && Character.isDigit(prevChar)) numStack.push(10. * numStack.peek() + (double)(currChar - '0'));
             else if (Character.isDigit(currChar)) numStack.push((double)(currChar - '0'));
-            else if (operators.contains(currChar) || currChar == '(') symbStack.push(currChar);
+            else if (operators.contains(currChar)) symbStack.push(currChar);
             else // тогда это закрывающая скобка
-                numStack.push(performCalculation(numStack.peek(), numStack.peek(), symbStack.peek()));
+                numStack.push(performCalculation(numStack.pop(), numStack.pop(), symbStack.pop()));
         }
 
         return numStack.peek();

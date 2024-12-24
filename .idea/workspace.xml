@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91bd2e0c-5ce9-42af-945c-37b3e87ca340" name="Changes" comment="expression modifying method done">
+    <list default="true" id="91bd2e0c-5ce9-42af-945c-37b3e87ca340" name="Changes" comment="validation check done">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/ExpressionCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/ExpressionCalculator.java" afterDir="false" />
     </list>
@@ -70,11 +70,20 @@
       <option name="project" value="LOCAL" />
       <updated>1735002566182</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="validation check done">
+      <option name="closed" value="true" />
+      <created>1735004159873</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1735004159874</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="expression modifying method done" />
-    <option name="LAST_COMMIT_MESSAGE" value="expression modifying method done" />
+    <MESSAGE value="validation check done" />
+    <option name="LAST_COMMIT_MESSAGE" value="validation check done" />
   </component>
 </project>
