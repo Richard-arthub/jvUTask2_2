@@ -10,6 +10,10 @@ import java.util.List;
 public class ExpressionCalculator {
 
     private String expression;
+    public void setExpression(String _expression) {
+        expression = _expression;
+        if (!isExpressionValid()) throw new InvalidExpressionException("Некорректный ввод выражения.");
+    }
     public String getExpression() {return expression;}
 
     private boolean isExpressionValid() {
@@ -22,26 +26,26 @@ public class ExpressionCalculator {
         char [] arrayExpression = expression.toCharArray();
 
         int bracketsCount = 0;
-        for (int i = 0; i < arrayExpression.length; i++)
-            if (!(Character.isDigit(arrayExpression[i]) || operators.contains(arrayExpression[i])))
-                if (arrayExpression[i] == '(') bracketsCount++;
-                else if (arrayExpression[i] == ')') bracketsCount--;
-                    else return false;
+        for (char c : arrayExpression)
+            if (!(Character.isDigit(c) || operators.contains(c)))
+                if (c == '(') bracketsCount++;
+                else if (c == ')') bracketsCount--;
+                else return false;
         if (bracketsCount != 0) return false;
 
-        if (operators.contains(arrayExpression[0]) || operators.contains(arrayExpression[arrayExpression.length-1])) return false;
+        if (operators.contains(arrayExpression[0]) || operators.contains(arrayExpression[arrayExpression.length-1]))
+            return false;
         for (int i = 2; i < arrayExpression.length-3; i++)
             if (operators.contains(arrayExpression[i]))
-                if (!((Character.isDigit(arrayExpression[i-1]) || arrayExpression[i] == ')') && (Character.isDigit(arrayExpression[i+1]) || arrayExpression[i] == '(')))
+                if (!((Character.isDigit(arrayExpression[i-1]) || arrayExpression[i-1] == ')') && (Character.isDigit(arrayExpression[i+1]) || arrayExpression[i+1] == '(')))
                     return false;
 
         stack<Integer> operCount = new stack<>();
         operCount.push(0);
-        for (int i = 0; i < arrayExpression.length; i++)
-        {
-            if (arrayExpression[i] == '(') operCount.push(0);
-            if (operators.contains(arrayExpression[i])) operCount.push(operCount.pop()+1);
-            if (arrayExpression[i] == ')')
+        for (char c : arrayExpression) {
+            if (c == '(') operCount.push(0);
+            if (operators.contains(c)) operCount.push(operCount.pop() + 1);
+            if (c == ')')
                 if (operCount.pop() == 0) return false;
         }
 
@@ -98,10 +102,12 @@ public class ExpressionCalculator {
                 countOpersInBrackets.push(0);
                 openBracketIndex.push(j);
             }
-            if (operators.contains(arrayExpression[j])) countOpersInBrackets.push(countOpersInBrackets.pop() + 1);
+            if (operators.contains(arrayExpression[j]))
+                countOpersInBrackets.push(countOpersInBrackets.pop() + 1);
 
             if (arrayExpression[j] == ')')
             {
+                //System.out.println(countOpersInBrackets.peek());
                 closeBracketIndex.push(j);
                 if (countOpersInBrackets.peek() != 1)
                 {
@@ -112,57 +118,65 @@ public class ExpressionCalculator {
                         {
                             if (arrayExpression[l] == opersArray[operIter])
                             {
-                                if (Character.isDigit(arrayExpression[l-1]))
+                                if (countOpersInBrackets.peek() != 1)
                                 {
-                                    int i = l-2;
-                                    while (Character.isDigit(arrayExpression[i])) i--;
-                                    arrayExpression = putElemIntoArray('(', i, arrayExpression);
-                                    closeBracketIndex.push(closeBracketIndex.pop()+1);
-                                }
-                                else
-                                {
-                                    int i = l-2;
-                                    int bracketsPair = 1;
-                                    while (bracketsPair > 0 && i > openBracketIndex.peek())
-                                    {
-                                        if (arrayExpression[i] == '(') bracketsPair--;
-                                        if (arrayExpression[i] == ')') bracketsPair++;
-                                        i--;
+                                    if (Character.isDigit(arrayExpression[l - 1])) {
+                                        int i = l - 1;
+                                        while (Character.isDigit(arrayExpression[i])) i--;
+                                        arrayExpression = putElemIntoArray('(', i + 1, arrayExpression);
+                                        closeBracketIndex.push(closeBracketIndex.pop() + 1);
+                                        l++;
+                                        j++;
+                                    } else {
+                                        int i = l - 1;
+                                        int bracketsPair = 1;
+                                        while (bracketsPair > 0 && i > openBracketIndex.peek()) {
+                                            if (arrayExpression[i] == '(') bracketsPair--;
+                                            if (arrayExpression[i] == ')') bracketsPair++;
+                                            i--;
+                                        }
+                                        arrayExpression = putElemIntoArray('(', i, arrayExpression);
+                                        closeBracketIndex.push(closeBracketIndex.pop() + 1);
+                                        l++;
+                                        j++;
                                     }
-                                    arrayExpression = putElemIntoArray('(', i, arrayExpression);
-                                    closeBracketIndex.push(closeBracketIndex.pop()+1);
+
+                                    if (Character.isDigit(arrayExpression[l + 1]))
+                                    {
+                                        int i = l + 1;
+                                        while (Character.isDigit(arrayExpression[i])) i++;
+                                        arrayExpression = putElemIntoArray(')', i, arrayExpression);
+                                        closeBracketIndex.push(closeBracketIndex.pop() + 1);
+                                    }
+                                    else
+                                    {
+                                        int i = l + 2;
+                                        int bracketsPair = 1;
+                                        while (bracketsPair > 0 && i < closeBracketIndex.peek())
+                                        {
+                                            if (arrayExpression[i] == '(') bracketsPair++;
+                                            if (arrayExpression[i] == ')') bracketsPair--;
+                                            i++;
+                                        }
+                                        arrayExpression = putElemIntoArray(')', i, arrayExpression);
+                                        closeBracketIndex.push(closeBracketIndex.pop() + 1);
+                                    }
+
+                                    countOpersInBrackets.push(countOpersInBrackets.peek() - 1);
                                     l++;
+                                    j++;
                                 }
-
-                                if (Character.isDigit(arrayExpression[l+1]))
-                                {
-                                    int i = l+2;
-                                    while (Character.isDigit(arrayExpression[i])) i++;
-                                    arrayExpression = putElemIntoArray(')', i, arrayExpression);
-                                    closeBracketIndex.push(closeBracketIndex.pop()+1);
-                                }
-                                else
-                                {
-                                    int i = l+2;
-                                    int bracketsPair = 1;
-                                    while (bracketsPair > 0 && i < closeBracketIndex.peek())
-                                    {
-                                        if (arrayExpression[i] == '(') bracketsPair++;
-                                        if (arrayExpression[i] == ')') bracketsPair--;
-                                        i++;
-                                    }
-                                    arrayExpression = putElemIntoArray(')', i, arrayExpression);
-                                    closeBracketIndex.push(closeBracketIndex.pop()+1);
-                                }
-
-                                countOpersInBrackets.push(countOpersInBrackets.peek() - 1);
+                                //else countOpersInBrackets.pop();
+                                else l++;
                             }
-                            l++;
+                            else l++;
                         }
                     }
                 }
+                countOpersInBrackets.pop();
+                openBracketIndex.pop();
+                closeBracketIndex.pop();
             }
-
             j++;
         }
 
@@ -170,10 +184,6 @@ public class ExpressionCalculator {
         expression = String.valueOf(arrayExpression);
     }
 
-    public void setExpression(String _expression) {
-        expression = _expression;
-        if (!isExpressionValid()) throw new InvalidExpressionException("Некорректный ввод выражения.");
-    }
 
     private double performCalculation(double num2, double num1, char operator) {
         // подсчёт через case
@@ -200,16 +210,19 @@ public class ExpressionCalculator {
         char [] charExpr = expression.toCharArray();
         char currChar, prevChar;
 
-        //первый символ всегда открывающая скобка
+        symbStack.push('(');//первый символ всегда открывающая скобка
         for (int i = 1; i < expression.length(); i ++)
         {
             currChar = charExpr[i];
             prevChar = charExpr[i-1];
             if (Character.isDigit(currChar) && Character.isDigit(prevChar)) numStack.push(10. * numStack.peek() + (double)(currChar - '0'));
             else if (Character.isDigit(currChar)) numStack.push((double)(currChar - '0'));
-            else if (operators.contains(currChar)) symbStack.push(currChar);
+            else if (operators.contains(currChar) || currChar == '(') symbStack.push(currChar);
             else // тогда это закрывающая скобка
+            {
                 numStack.push(performCalculation(numStack.pop(), numStack.pop(), symbStack.pop()));
+                symbStack.pop();
+            }
         }
 
         return numStack.peek();
