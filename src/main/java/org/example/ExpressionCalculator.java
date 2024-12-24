@@ -13,15 +13,39 @@ public class ExpressionCalculator {
     public String getExpression() {return expression;}
 
     private boolean isExpressionValid() {
-        boolean isValid = false;
-        // внутри скобок пусто
         // скобка не имеет пары
         // не цифра и не оператор
         // оператор в начале, проверить отдельно
         // вокруг оператора есть цифры
+        // скобки действительно содержат числа и операнды внутри
         //
-        //
-        return isValid;
+        char [] arrayExpression = expression.toCharArray();
+
+        int bracketsCount = 0;
+        for (int i = 0; i < arrayExpression.length; i++)
+            if (!(Character.isDigit(arrayExpression[i]) || operators.contains(arrayExpression[i])))
+                if (arrayExpression[i] == '(') bracketsCount++;
+                else if (arrayExpression[i] == ')') bracketsCount--;
+                    else return false;
+        if (bracketsCount != 0) return false;
+
+        if (operators.contains(arrayExpression[0]) || operators.contains(arrayExpression[arrayExpression.length-1])) return false;
+        for (int i = 2; i < arrayExpression.length-3; i++)
+            if (operators.contains(arrayExpression[i]))
+                if (!((Character.isDigit(arrayExpression[i-1]) || arrayExpression[i] == ')') && (Character.isDigit(arrayExpression[i+1]) || arrayExpression[i] == '(')))
+                    return false;
+
+        stack<Integer> operCount = new stack<>();
+        operCount.push(0);
+        for (int i = 0; i < arrayExpression.length; i++)
+        {
+            if (arrayExpression[i] == '(') operCount.push(0);
+            if (operators.contains(arrayExpression[i])) operCount.push(operCount.pop()+1);
+            if (arrayExpression[i] == ')')
+                if (operCount.pop() == 0) return false;
+        }
+
+        return true;
     }
 
     private char [] putElemIntoArray (char c, int idx, char [] arr)
@@ -30,7 +54,7 @@ public class ExpressionCalculator {
         if (idx > 0) System.arraycopy(arr, 0, newArr, 0, idx);
         newArr[idx] = c;
         if (arr.length - idx > 0) System.arraycopy(arr, idx, newArr, idx+1, arr.length - idx);
-
+        //System.out.println(newArr);
         return newArr;
     }
 
@@ -71,7 +95,7 @@ public class ExpressionCalculator {
         while (j < arrayExpression.length)
         {
             if (arrayExpression[j] == '(') {
-                countOpersInBrackets.push(1);
+                countOpersInBrackets.push(0);
                 openBracketIndex.push(j);
             }
             if (operators.contains(arrayExpression[j])) countOpersInBrackets.push(countOpersInBrackets.pop() + 1);
