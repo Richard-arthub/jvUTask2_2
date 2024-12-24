@@ -7,13 +7,28 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Класс ExpressionCalculator для вычисления значения математического выражения, записанного в виде символьной строки
+ * Класс поддерживает скобки, операнды {*, /, +, -}, целые неотрицательные числа (результат вычисления может быть нецелым)
+ * Перед вычислением выражения необходимо его задать с помощью специального метода
+ */
 public class ExpressionCalculator {
 
     private String expression;
+    /**
+     * Метод позволяет задать новое выражение
+     *
+     * @param _expression математическое выражение в виде символьной строки
+     */
     public void setExpression(String _expression) {
         expression = _expression;
         if (!isExpressionValid()) throw new InvalidExpressionException("Некорректный ввод выражения.");
     }
+    /**
+     * Метод позволяет получить текущее выражение
+     *
+     * @return символьная строка текущего выражения
+     */
     public String getExpression() {return expression;}
 
     private boolean isExpressionValid() {
@@ -200,6 +215,11 @@ public class ExpressionCalculator {
 
     static final private List<Character> operators = Arrays.asList('*', '/', '+', '-');
 
+    /**
+     * Метод позволяет получить посчитанное значение текущего выражение
+     *
+     * @return посчитанное значение выражения в формате double
+     */
     public double calculate() {
 
         stack<Double> numStack = new stack<>();
@@ -215,7 +235,7 @@ public class ExpressionCalculator {
         {
             currChar = charExpr[i];
             prevChar = charExpr[i-1];
-            if (Character.isDigit(currChar) && Character.isDigit(prevChar)) numStack.push(10. * numStack.peek() + (double)(currChar - '0'));
+            if (Character.isDigit(currChar) && Character.isDigit(prevChar)) numStack.push(10. * numStack.pop() + (double)(currChar - '0'));
             else if (Character.isDigit(currChar)) numStack.push((double)(currChar - '0'));
             else if (operators.contains(currChar) || currChar == '(') symbStack.push(currChar);
             else // тогда это закрывающая скобка
